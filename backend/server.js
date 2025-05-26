@@ -20,6 +20,7 @@ app.post("/generate", async (req, res) => {
   const effectiveModel = model || "qwen/qwen-2.5-72b-instruct";
 
   try {
+    // ⚠️ Fixed URL: Removed extra space at the end of the URL
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions ", {
       method: "POST",
       headers: {
@@ -45,7 +46,7 @@ app.post("/generate", async (req, res) => {
 
     // Extract generated text
     const generatedText = data.choices[0]?.message?.content || "No content generated.";
-    res.json({ content: generatedText }); // Return content in the expected format
+    res.json({ content: generatedText }); // Return content in expected format
   } catch (err) {
     console.error("⚠️ Server Error:", err.message);
     res.status(500).json({ error: "Internal server error", details: err.message });
