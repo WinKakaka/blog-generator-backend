@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Black Hat Blog Generator</title>
+  <!-- ✅ Fixed Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com "></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    #blogPreview {
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .prose img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 1rem auto;
+    }
+    #outputSection {
+      max-width: 1400px;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-6">
+
+  <div class="max-w-6xl mx-auto bg-white/5 glass p-8 rounded-xl shadow-lg">
+    <h1 class="text-4xl font-bold mb-6 text-center text-white">🩸 Black Hat Blog Generator</h1>
+
+    <!-- Form -->
+    <form id="blogForm" class="bg-white/10 glass p-6 rounded-lg space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold mb-1">Title or Main Keyword:</label>
+          <input type="text" id="titleKeyword" name="titleKeyword" class="glass form-input w-full p-3 text-white placeholder:text-gray-300" required />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Main Keyword:</label>
+          <input type="text" id="mainKeyword" name="mainKeyword" class="glass form-input w-full p-3 text-white" required />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Related Keywords (comma-separated):</label>
+          <input type="text" id="relatedKeywords" name="relatedKeywords" class="glass form-input w-full p-3 text-white placeholder:text-gray-300" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Internal Links (optional):</label>
+          <input type="text" id="internalLinks" name="internalLinks" class="glass form-input w-full p-3 text-white placeholder:text-gray-300" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Business Info (optional):</label>
+          <textarea id="businessInfo" name="businessInfo" rows="3" class="glass form-textarea w-full p-3 text-white placeholder:text-gray-300"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Word Count:</label>
+          <select id="wordCount" name="wordCount" class="glass form-input w-full p-3 text-white">
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+            <option value="1500">1500</option>
+            <option value="2000">2000</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Output Format:</label>
+          <div class="flex items-center space-x-4 mt-1">
+            <label><input type="radio" name="outputFormat" value="html" checked class="mr-1" /> HTML</label>
+            <label><input type="radio" name="outputFormat" value="plain" class="mr-1" /> Plain Text</label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">AI Image Prompt (e.g., "A modern office"):</label>
+          <input type="text" id="imagePrompt" name="imagePrompt" placeholder="Describe the blog image..." class="glass form-input w-full p-3 text-white placeholder:text-gray-300" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Custom Image URL (optional):</label>
+          <input type="text" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg " class="glass form-input w-full p-3 text-white placeholder:text-gray-300" />
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-center space-x-4">
+        <button type="button" id="generateNormal" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">Generate Normal Blog</button>
+        <button type="button" id="generateExtreme" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">Generate Extreme Blog</button>
+      </div>
+    </form>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="hidden mt-8 text-center">
+      <svg class="animate-spin h-10 w-10 text-purple-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.89 5.836 4.659 6.95l2.454-.9a1.007 1.007 0 00.387-2.032 10.015 10.015 0 012.894-2.325 10.125 10.125 0 016.288 2.358 1.007 1.007 0 001.504-1.171 7.98 7.98 0 012.543 5.148c0 5.041-3.327 9.21-8.006 10.072a10.02 10.02 0 01-6.982-3.282 10.019 10.019 0 01-2.832-7.168z" fill="currentColor"></path>
+      </svg>
+      <p class="mt-3 text-white">🧠 Generating intelligent content...</p>
+    </div>
+
+    <!-- Output Section -->
+    <div id="outputSection" class="hidden mt-8 bg-white/10 glass p-6 rounded-lg max-w-screen-lg">
+      <h2 class="text-2xl font-bold mb-4 text-white">📄 Generated Blog Content</h2>
+      <div id="blogPreview" class="prose prose-invert max-w-none whitespace-pre-wrap text-white mb-4 overflow-y-auto max-h-[80vh]"></div>
+      <button id="downloadBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition duration-200">📥 Download</button>
+      <p class="mt-4 text-red-300 font-medium">⚠️ Blackhat methods may lead to Google penalties or deindexing. Use at your own risk!</p>
+    </div>
+
+    <!-- Error Message -->
+    <div id="error" class="hidden mt-4 p-4 bg-red-900/70 text-red-200 rounded text-center"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("blogForm");
+    const errorDiv = document.getElementById("error");
+    const outputSection = document.getElementById("outputSection");
+    const blogPreview = document.getElementById("blogPreview");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const loadingDiv = document.getElementById("loading");
+
+    // 🔁 Replace with your live backend URL
+    const BACKEND_URL = "http://localhost:3000/generate ";
+
+    // Load saved data on page load
+    window.addEventListener("load", () => {
+      Array.from(form.elements).forEach(input => {
+        if (localStorage.getItem(input.id)) input.value = localStorage.getItem(input.id);
+      });
+    });
+
+    // Save inputs to localStorage
+    form.addEventListener("input", () => {
+      Array.from(form.elements).forEach(input => {
+        localStorage.setItem(input.id, input.value);
+      });
+    });
+
+    function getFormData() {
+      const formData = {};
+      Array.from(form.elements).forEach(input => {
+        formData[input.id] = input.value.trim();
+      });
+      return formData;
+    }
+
+    async function generateBlog(mode) {
+      const data = getFormData();
+
+      if (!data.mainKeyword) {
+        showError("Main keyword is required.");
+        return;
+      }
+
+      showLoading();
+
+      let prompt = buildPrompt(data, mode);
+
+      try {
+        const response = await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt,
+            model: "qwen/qwen-2.5-72b-instruct"
+          })
+        });
+
+        if (!response.ok) throw new Error("API Error");
+
+        const result = await response.json();
+        let content = result.content || result.choices?.[0]?.message?.content || "No content generated.";
+
+        // Insert custom image if provided
+        if (data.imageUrl) {
+          const imageUrlTag = `<img src="${data.imageUrl}" alt="Custom Image" />`;
+          content = content.replace(/<!-- IMAGE_PLACEHOLDER -->/, imageUrlTag);
+        }
+
+        hideLoading();
+        displayOutput(content, mode, data.outputFormat === "html");
+      } catch (err) {
+        console.error(err);
+        hideLoading();
+        showError("Failed to generate blog. Please try again later.");
+      }
+    }
+
+    function buildPrompt(data, mode) {
+      let basePrompt = `Write a ${data.wordCount}-word blog post about "${data.titleKeyword || data.mainKeyword}", focusing heavily on the keyword "${data.mainKeyword}".`;
+
+      if (mode === "normal") {
+        basePrompt += `
+          Make it SEO-friendly with around 3-4% keyword density.
+          Include meta description, H1-H3 headings, internal links (${data.internalLinks}), and business info where appropriate.
+          Add relevant keywords that complement the topic even if not listed.
+          Suggest an image using this prompt: "${data.imagePrompt}".
+          <!-- IMAGE_PLACEHOLDER -->
+        `;
+        if (data.relatedKeywords) basePrompt += ` Related keywords: ${data.relatedKeywords}.`;
+      }
+
+      if (mode === "extreme") {
+        basePrompt += `
+          Generate a BLACK HAT blog with 7-8% keyword density.
+          Include hidden white-on-white text, cloaking scripts for bots, spun variations, and overuse of the main keyword.
+          Add internal links and business info aggressively.
+          Include any relevant keywords you think should be there.
+          Suggest an image using this prompt: "${data.imagePrompt}".
+          <!-- IMAGE_PLACEHOLDER -->
+        `;
+      }
+
+      return basePrompt;
+    }
+
+    function displayOutput(content, mode, isHtml) {
+      blogPreview.innerHTML = isHtml ? content : `<pre>${content}</pre>`;
+      outputSection.classList.remove("hidden");
+
+      downloadBtn.onclick = () => {
+        const blobType = isHtml ? "text/html" : "text/plain";
+        const fileExt = isHtml ? ".html" : ".txt";
+        const filename = `blackhat_blog_${mode}_${Date.now()}${fileExt}`;
+        const blob = new Blob([content], { type: blobType });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      };
+    }
+
+    function showError(message) {
+      errorDiv.textContent = message;
+      errorDiv.classList.remove("hidden");
+    }
+
+    function hideError() {
+      errorDiv.classList.add("hidden");
+    }
+
+    function showLoading() {
+      loadingDiv.classList.remove("hidden");
+    }
+
+    function hideLoading() {
+      loadingDiv.classList.add("hidden");
+    }
+
+    document.getElementById("generateNormal").addEventListener("click", () => generateBlog("normal"));
+    document.getElementById("generateExtreme").addEventListener("click", () => generateBlog("extreme"));
+  </script>
+</body>
+</html>
