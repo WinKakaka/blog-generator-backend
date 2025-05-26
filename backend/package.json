@@ -2,9 +2,9 @@
   "name": "blog-generator-backend",
   "version": "1.0.0",
   "description": "Backend for Black Hat Blog Generator",
-  "main": "server.js", // Ensure this points to your main file
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js" // Ensure this matches your start command
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
